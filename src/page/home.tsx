@@ -1,63 +1,29 @@
-import { useEffect, useState } from 'react';
 import InitialGraph from '../components/initalgraph';
-import { TypeDevice, TypePerformancePrometeus } from '../types/TypeDevice';
-import { getAllDevices, getCycleForDay, getLastWeldBead } from '../api/api';
-import { TypeCycleOfPrometeusToDay } from '../types/TypeCycle';
+import { getCycleForDay, getLastWeldBead } from '../api/api';
 import GraphCycleToDay from '../components/graphCycleToDay';
+import { useQuery } from '@tanstack/react-query';
 
 const Home = () => {
-  // const [isInfoDevice, setInfoDevice] = useState<[] | TypeResumeDevice[]>([]);
-  const [isIds, setIds] = useState<string>('');
-  const [isCycleOfPrometeusToDay, setCycleOfPrometeusToDay] = useState<
-    null | TypeCycleOfPrometeusToDay[]
-  >(null);
-  const [isWelding, setWelding] = useState<TypePerformancePrometeus[] | null>(
-    null
-  );
+  const {
+    data: isCycleOfPrometeusToDay,
+    isLoading: isLoadingCycleOfPrometeus,
+    error: errorCycleOfPrometeus,
+  } = useQuery({
+    queryKey: ['cycleOfPrometeus'],
+    queryFn: getCycleForDay,
+    refetchInterval: 10000,
+  });
 
-  useEffect(() => {
-    async function getInfoDevices() {
-      const devices: TypeDevice[] = await getAllDevices();
+  const {
+    data: isWelding,
+    isLoading: isLoadingWeldBead,
+    error: errorWeldBead,
+  } = useQuery({
+    queryKey: ['weldBead'],
+    queryFn: getLastWeldBead,
+    refetchInterval: 2000,
+  });
 
-      const ids = devices.map((item) => item.id).join(',');
-
-      setIds(ids);
-    }
-
-    getInfoDevices();
-  }, []);
-
-  useEffect(() => {
-    async function getPerformancePrometeus() {
-      const data: TypePerformancePrometeus[] = await getLastWeldBead(isIds);
-
-      setWelding(data);
-    }
-
-    const time = setInterval(() => {
-      getPerformancePrometeus();
-    }, 2000);
-
-    return () => clearInterval(time);
-  }, [isIds]);
-
-  useEffect(() => {
-    async function getPerformancePrometeus() {
-      const cycles = await getCycleForDay(isIds);
-      setCycleOfPrometeusToDay(cycles);
-
-      console.log(cycles);
-    }
-
-    getPerformancePrometeus();
-    const time = setInterval(() => {
-      getPerformancePrometeus();
-    }, 20000);
-
-    return () => clearInterval(time);
-  }, [isIds]);
-
-  //devices error, now i need answer how can i get one informations
   return (
     <main className=' w-full pl-[20%]'>
       <h1 className=' pt-4 pl-8 font-medium'>

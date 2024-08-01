@@ -32,3 +32,5 @@ export async function getLastWeldBead(ids: string) {
     return data;
   }
 }
+
+export async function teste() {}

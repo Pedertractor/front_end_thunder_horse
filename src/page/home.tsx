@@ -3,6 +3,7 @@ import { getCycleForDay, getLastWeldBead } from '../api/api';
 import GraphCycleToDay from '../components/graphCycleToDay';
 import { useQuery } from '@tanstack/react-query';
 import LoadingLastWelding from '../components/loadingpage/loadinglastwelding';
+import LoadingCycleToday from '../components/loadingpage/loadingcycletoday';
 
 const Home = () => {
   const {
@@ -40,7 +41,8 @@ const Home = () => {
             : null}
         </section>
         <section className='  flex flex-col gap-2 py-2'>
-          {isCycleOfPrometeusToDay
+          {isLoadingCycleOfPrometeus ? <LoadingCycleToday /> : null}
+          {isCycleOfPrometeusToDay && !isLoadingCycleOfPrometeus
             ? isCycleOfPrometeusToDay.map((device, index) => (
                 <GraphCycleToDay isCycleOfPrometeusToDay={device} key={index} />
               ))

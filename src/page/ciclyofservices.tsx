@@ -1,73 +1,48 @@
+import Calendar from '../components/calendar';
+import LineGraphCycle from '../components/linegraphcycle';
+import BlocsAllCycle from '../components/blocsallcycle';
+import ButtonSelectDevices from '../components/buttonselectdevices';
+import GasValues from '../components/gasvalues';
+
 import { useEffect, useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import { IoCalendarClearOutline } from 'react-icons/io5';
-import Calendar from '../components/calendar';
-import { getAllDevices, getPriceGas, url } from '../api/api';
-import { TypeDevicesCycle } from '../types/TypeCycle';
-import LineGraphCycle from '../components/linegraphcycle';
-import BlocsAllCycle from '../components/blocsallcycle';
-import { TypeDevice, TypeResumeDevice } from '../types/TypeDevice';
-import ButtonSelectDevices from '../components/buttonselectdevices';
+import { getFullCicly, getPriceGas, listDevicesForCheck } from '../api/api';
 import { TypeValuesOfGas } from '../types/TypeValuesOfGas';
-import GasValues from '../components/gasvalues';
+import { useQuery } from '@tanstack/react-query';
 
 const CiclyOfService = () => {
-  const [isListOfPrometeus, setListOfPrometeus] = useState<boolean>(false);
-  const [isButton, setButton] = useState<boolean>(false);
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(
     undefined
   );
+
+  const [isListOfPrometeus, setListOfPrometeus] = useState<boolean>(false);
+  const [isButton, setButton] = useState<boolean>(false);
   const [isSelectDevices, setSelectDevices] = useState<null | string[]>(null);
-  const [isDaysCycle, setDaysCycle] = useState<null | TypeDevicesCycle[]>(null);
-  const [isAllIdDevices, setAllIdDevices] = useState<[] | TypeResumeDevice[]>(
-    []
-  );
+
   const [isGasPage, setGasPage] = useState<boolean>(false);
   const [isValuesOfGas, setValuesOfGas] = useState<null | TypeValuesOfGas[]>(
     null
   );
 
-  useEffect(() => {
-    async function fetchDatas() {
-      const devices: TypeDevice[] = await getAllDevices();
-      const arr: TypeResumeDevice[] = [];
-      devices.map((item) =>
-        arr.push({
-          id: item.id,
-          prometeusCode: item.prometeusCode,
-        })
-      );
-      setAllIdDevices(arr);
-    }
+  const { data: isAllIdDevices, isLoading: isLoadingAllIdDevices } = useQuery({
+    queryKey: ['listDevicesForCheck'],
+    queryFn: listDevicesForCheck,
+  });
 
-    fetchDatas();
-  }, []);
-
-  useEffect(() => {
-    async function getFullCicly(from: string, to: string) {
-      if (isSelectDevices) {
-        const result: string = isSelectDevices.join(',');
-        console.log(`${url}/servicecycle/${result}/${from}/${to}`);
-        const response = await fetch(
-          `${url}/servicecycle/${result}/${from}/${to}`
-        );
-
-        const data: TypeDevicesCycle[] = await response.json();
-        setDaysCycle(data);
-
-        console.log(data);
+  const { data: isDaysCycle, isLoading: isLoadingFullCycle } = useQuery({
+    queryKey: ['getFullCycle'],
+    queryFn: () => {
+      if (selectedRange && isSelectDevices) {
+        getFullCicly({
+          selectedRange,
+          isSelectDevices,
+          setButton,
+          setListOfPrometeus,
+        });
       }
-    }
-
-    if (selectedRange && selectedRange.from && selectedRange.to) {
-      setButton(false);
-      setListOfPrometeus(false);
-
-      const from = selectedRange.from.toISOString().slice(0, 10);
-      const to = selectedRange.to.toISOString().slice(0, 10);
-      getFullCicly(from, to);
-    }
-  }, [selectedRange, isSelectDevices]);
+    },
+  });
 
   useEffect(() => {
     async function getValuesOfGas() {
@@ -87,9 +62,7 @@ const CiclyOfService = () => {
         valuesGas.map((item) =>
           item.values.map(
             (value) =>
-              (value.data = new Date(value.data)
-                .toISOString()
-                .slice(0, 10))
+              (value.data = new Date(value.data).toISOString().slice(0, 10))
           )
         );
         setValuesOfGas(valuesGas);
@@ -115,15 +88,17 @@ const CiclyOfService = () => {
   return (
     <main className=' w-full pl-[20%]'>
       <section className=' w-full  h-screen flex flex-col px-8 py-4 gap-2'>
-        <ButtonSelectDevices
-          setButton={setButton}
-          setGasPage={setGasPage}
-          isListOfPrometeus={isListOfPrometeus}
-          setListOfPrometeus={setListOfPrometeus}
-          isAllIdDevices={isAllIdDevices}
-          isSelectDevices={isSelectDevices}
-          setSelectDevices={setSelectDevices}
-        />
+        {isAllIdDevices && (
+          <ButtonSelectDevices
+            setButton={setButton}
+            setGasPage={setGasPage}
+            isListOfPrometeus={isListOfPrometeus}
+            setListOfPrometeus={setListOfPrometeus}
+            isAllIdDevices={isAllIdDevices}
+            isSelectDevices={isSelectDevices}
+            setSelectDevices={setSelectDevices}
+          />
+        )}
 
         <button
           onClick={handleSelectDate}

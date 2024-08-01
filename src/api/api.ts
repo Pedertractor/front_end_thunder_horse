@@ -1,5 +1,13 @@
-import { TypeCycleOfPrometeusToDay } from '../types/TypeCycle';
-import { TypeDevice, TypePerformancePrometeus } from '../types/TypeDevice';
+import { DateRange } from 'react-day-picker';
+import {
+  TypeCycleOfPrometeusToDay,
+  TypeDevicesCycle,
+} from '../types/TypeCycle';
+import {
+  TypeDevice,
+  TypePerformancePrometeus,
+  TypeResumeDevice,
+} from '../types/TypeDevice';
 
 export const url = import.meta.env.VITE_BASE_URL_URL_API;
 
@@ -49,3 +57,51 @@ export async function getLastWeldBead() {
   });
   return sortByPrometeus;
 }
+
+export async function listDevicesForCheck() {
+  const devices = await getAllDevices();
+
+  const arrayWithResumeDevice: TypeResumeDevice[] = [];
+
+  devices.map((device) => {
+    arrayWithResumeDevice.push({
+      id: device.id,
+      prometeusCode: device.prometeusCode,
+    });
+  });
+  console.log(arrayWithResumeDevice);
+  return arrayWithResumeDevice;
+}
+
+export async function getFullCicly({
+  selectedRange,
+  isSelectDevices,
+  setButton,
+  setListOfPrometeus,
+}: {
+  selectedRange: DateRange | undefined;
+  isSelectDevices: string[] | null;
+  setButton: (props: boolean) => void;
+  setListOfPrometeus: (props: boolean) => void;
+}) {
+  if (
+    selectedRange &&
+    selectedRange.from &&
+    selectedRange.to &&
+    isSelectDevices
+  ) {
+    setButton(false);
+    setListOfPrometeus(false);
+    const from = selectedRange.from.toISOString().slice(0, 10);
+    const to = selectedRange.to.toISOString().slice(0, 10);
+    const result: string = isSelectDevices.join(',');
+
+    const response = await fetch(`${url}/servicecycle/${result}/${from}/${to}`);
+
+    const data: TypeDevicesCycle[] = await response.json();
+
+    return data;
+  }
+}
+
+// export async function getValuesOfGas(selectedRange) {}

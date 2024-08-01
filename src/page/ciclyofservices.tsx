@@ -4,11 +4,10 @@ import BlocsAllCycle from '../components/blocsallcycle';
 import ButtonSelectDevices from '../components/buttonselectdevices';
 import GasValues from '../components/gasvalues';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import { IoCalendarClearOutline } from 'react-icons/io5';
-import { getFullCicly, getPriceGas, listDevicesForCheck } from '../api/api';
-import { TypeValuesOfGas } from '../types/TypeValuesOfGas';
+import { getFullCicly, getValuesOfGas, listDevicesForCheck } from '../api/api';
 import { useQuery } from '@tanstack/react-query';
 
 const CiclyOfService = () => {
@@ -21,9 +20,6 @@ const CiclyOfService = () => {
   const [isSelectDevices, setSelectDevices] = useState<null | string[]>(null);
 
   const [isGasPage, setGasPage] = useState<boolean>(false);
-  const [isValuesOfGas, setValuesOfGas] = useState<null | TypeValuesOfGas[]>(
-    null
-  );
 
   const { data: isAllIdDevices, isLoading: isLoadingAllIdDevices } = useQuery({
     queryKey: ['listDevicesForCheck'],
@@ -31,47 +27,20 @@ const CiclyOfService = () => {
   });
 
   const { data: isDaysCycle, isLoading: isLoadingFullCycle } = useQuery({
-    queryKey: ['getFullCycle'],
-    queryFn: () => {
-      if (selectedRange && isSelectDevices) {
-        getFullCicly({
-          selectedRange,
-          isSelectDevices,
-          setButton,
-          setListOfPrometeus,
-        });
-      }
-    },
+    queryKey: ['getFullCycle', selectedRange, isSelectDevices],
+    queryFn: () =>
+      getFullCicly(
+        selectedRange,
+        isSelectDevices,
+        setButton,
+        setListOfPrometeus
+      ),
   });
 
-  useEffect(() => {
-    async function getValuesOfGas() {
-      if (
-        selectedRange &&
-        selectedRange.from &&
-        selectedRange.to &&
-        isSelectDevices
-      ) {
-        const from = selectedRange.from.toISOString().slice(0, 10);
-        const to = selectedRange.to.toISOString().slice(0, 10);
-        const ids = isSelectDevices.join(',');
-
-        const valuesGas: TypeValuesOfGas[] = await getPriceGas(ids, from, to);
-
-        valuesGas.forEach((item) => item.values.reverse());
-        valuesGas.map((item) =>
-          item.values.map(
-            (value) =>
-              (value.data = new Date(value.data).toISOString().slice(0, 10))
-          )
-        );
-        setValuesOfGas(valuesGas);
-        console.log(valuesGas);
-      }
-    }
-
-    getValuesOfGas();
-  }, [isSelectDevices, selectedRange]);
+  const { data: isValuesOfGas, isLoading: isLoadingValuesOfGas } = useQuery({
+    queryKey: ['valuesOfGas', selectedRange, isSelectDevices],
+    queryFn: () => getValuesOfGas(selectedRange, isSelectDevices),
+  });
 
   async function handleClickGas() {
     setButton(false);
@@ -135,8 +104,10 @@ const CiclyOfService = () => {
           <GasValues isValuesOfGas={isValuesOfGas} />
         ) : (
           <div>
-            {isDaysCycle ? <LineGraphCycle isDaysCycle={isDaysCycle} /> : null}
-            {isDaysCycle ? (
+            {isDaysCycle && isDaysCycle.length > 0 ? (
+              <LineGraphCycle isDaysCycle={isDaysCycle} />
+            ) : null}
+            {isDaysCycle && isDaysCycle.length > 0 ? (
               <BlocsAllCycle isAllCycle={isDaysCycle} />
             ) : (
               <p className=' mt-20'>Ensira as informações</p>

@@ -38,22 +38,28 @@ const LineGraphCycle = ({ isDaysCycle }: Props) => {
 
     const forLine: DeviceCycle[] = [];
     if (isDaysCycle) {
-      isDaysCycle.forEach((item) => {
-        item.weldingCycle[0].map((cycle) => {
-          forLine.push({
-            prometeus: item.prometeus,
-            data: cycle.data,
-            porcentagemCapacidadeEfetiva: cycle.porcentagemCapacidadeEfetiva,
-            porcentagemParado: cycle.porcentagemParado,
-            porcentagemTrabalhando: cycle.porcentagemTrabalhando,
-            quantidadeDeCordoesDeSolda: cycle.quantidadeDeCordoesDeSolda,
-            tempoParado: cycle.tempoParado,
-            tempoTrabalhado: cycle.tempoTrabalhado,
+      isDaysCycle
+        .sort((a, b) => {
+          const numA = parseInt(a.prometeus.replace('prometeus', ''));
+          const numB = parseInt(b.prometeus.replace('prometeus', ''));
+
+          return numA - numB;
+        })
+        .forEach((item) => {
+          item.weldingCycle[0].map((cycle) => {
+            forLine.push({
+              prometeus: item.prometeus,
+              data: cycle.data,
+              porcentagemCapacidadeEfetiva: cycle.porcentagemCapacidadeEfetiva,
+              porcentagemParado: cycle.porcentagemParado,
+              porcentagemTrabalhando: cycle.porcentagemTrabalhando,
+              quantidadeDeCordoesDeSolda: cycle.quantidadeDeCordoesDeSolda,
+              tempoParado: cycle.tempoParado,
+              tempoTrabalhado: cycle.tempoTrabalhado,
+            });
           });
         });
-      });
     }
-    console.log(isDaysCycle);
 
     forLine.forEach((item) => {
       let foundTrabalhado = organizationDatas.porcentagemTrabalhado.find(
@@ -81,7 +87,6 @@ const LineGraphCycle = ({ isDaysCycle }: Props) => {
       foundParado[item.prometeus] = item.porcentagemParado;
     });
 
-    console.log(organizationDatas);
     setDataForGraph(organizationDatas);
   }, [isDaysCycle]);
 

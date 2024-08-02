@@ -9,6 +9,8 @@ import { DateRange } from 'react-day-picker';
 import { IoCalendarClearOutline } from 'react-icons/io5';
 import { getFullCicly, getValuesOfGas, listDevicesForCheck } from '../api/api';
 import { useQuery } from '@tanstack/react-query';
+import LoadingBlocAllCycle from '../components/loadingpage/loadingblocallcycle';
+import LoadingButtonGas from '../components/loadingpage/loadingbuttongas';
 
 const CiclyOfService = () => {
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(
@@ -21,7 +23,7 @@ const CiclyOfService = () => {
 
   const [isGasPage, setGasPage] = useState<boolean>(false);
 
-  const { data: isAllIdDevices, isLoading: isLoadingAllIdDevices } = useQuery({
+  const { data: isAllIdDevices } = useQuery({
     queryKey: ['listDevicesForCheck'],
     queryFn: listDevicesForCheck,
   });
@@ -70,6 +72,7 @@ const CiclyOfService = () => {
         )}
 
         <button
+          disabled={isLoadingFullCycle}
           onClick={handleSelectDate}
           className={` ${
             isButton ? ' bg-zinc-700' : 'bg-[#234476]'
@@ -93,24 +96,31 @@ const CiclyOfService = () => {
           />
         ) : null}
         <button
+          disabled={isLoadingValuesOfGas}
           className={`${
             isGasPage ? ' bg-zinc-700 ' : 'bg-[#234476]'
           } text-white absolute top-[3%] right-[35%] rounded p-2 text-sm`}
           onClick={handleClickGas}
         >
-          Gastos com gás
+          {isLoadingValuesOfGas ? <LoadingButtonGas /> : 'Gastos com gás'}
         </button>
         {isGasPage && isValuesOfGas ? (
           <GasValues isValuesOfGas={isValuesOfGas} />
         ) : (
-          <div>
-            {isDaysCycle && isDaysCycle.length > 0 ? (
-              <LineGraphCycle isDaysCycle={isDaysCycle} />
-            ) : null}
-            {isDaysCycle && isDaysCycle.length > 0 ? (
-              <BlocsAllCycle isAllCycle={isDaysCycle} />
+          <div className=' w-full h-screen'>
+            {isLoadingFullCycle ? (
+              <LoadingBlocAllCycle />
             ) : (
-              <p className=' mt-20'>Ensira as informações</p>
+              <>
+                {isDaysCycle && isDaysCycle.length > 0 ? (
+                  <LineGraphCycle isDaysCycle={isDaysCycle} />
+                ) : null}
+                {isDaysCycle && isDaysCycle.length > 0 ? (
+                  <BlocsAllCycle isAllCycle={isDaysCycle} />
+                ) : (
+                  <p className=' mt-20'>Ensira as informações</p>
+                )}
+              </>
             )}
           </div>
         )}

@@ -18,6 +18,7 @@ import {
   MdOutlineKeyboardArrowRight,
 } from 'react-icons/md';
 import LevelForEffetiveCapacity from './levelforeffectivecapacity';
+import MoreInformationsForStop from './moreinformationsforstop';
 
 interface Props {
   isDaysCycle: TypeDevicesCycle[];
@@ -167,21 +168,10 @@ const LineGraphCycle = ({ isDaysCycle }: Props) => {
                       mais informações
                     </button>
                     {isLittleList && (
-                      <>
-                        <div className=' w-full flex items-center justify-between'>
-                          <p className='text-sm flex  flex-col items-center gap-1 justify-center'>
-                            tempo parado
-                            <span> {item.tempoParado} sec</span>
-                          </p>
-
-                          <p className='text-sm flex flex-col items-center gap-1 justify-center'>
-                            Trabalhando
-                            <span> {item.tempoTrabalhado} sec</span>
-                          </p>
-                        </div>
-                        <p className='text-sm'>Quantidade de soldas</p>
-                        {item.quantidadeDeCordoesDeSolda} cordões
-                      </>
+                      <MoreInformationsForStop
+                        date={item.data}
+                        isId={cycles.prometeus}
+                      />
                     )}
                   </div>
                 ))}

@@ -3,7 +3,6 @@ import LineGraphCycle from '../components/linegraphcycle';
 import BlocsAllCycle from '../components/blocsallcycle';
 import ButtonSelectDevices from '../components/buttonselectdevices';
 import GasValues from '../components/gasvalues';
-
 import { useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import { IoCalendarClearOutline } from 'react-icons/io5';

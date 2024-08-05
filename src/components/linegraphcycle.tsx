@@ -25,7 +25,9 @@ interface Props {
 }
 
 const LineGraphCycle = ({ isDaysCycle }: Props) => {
-  const [isLittleList, setLittleList] = useState<boolean>(false);
+  const [isLittleList, setLittleList] = useState<boolean[]>(
+    new Array(isDaysCycle.length).fill(false)
+  );
   const [isDataForGraph, setDataForGraph] = useState<TypeOrganization>();
   const [openLists, setOpenLists] = useState<boolean[]>(
     new Array(isDaysCycle.length).fill(false)
@@ -90,6 +92,12 @@ const LineGraphCycle = ({ isDaysCycle }: Props) => {
 
     setDataForGraph(organizationDatas);
   }, [isDaysCycle]);
+
+  const toggleLittleList = (index: number) => {
+    const updateOpenLittleList = [...isLittleList];
+    updateOpenLittleList[index] = !updateOpenLittleList[index];
+    setLittleList(updateOpenLittleList);
+  };
 
   const toggleList = (index: number) => {
     const updatedOpenLists = [...openLists];
@@ -163,14 +171,14 @@ const LineGraphCycle = ({ isDaysCycle }: Props) => {
 
                     <button
                       className=' bg-slate-400 p-1 font-bold w-full text-sm rounded'
-                      onClick={() => setLittleList(!isLittleList)}
+                      onClick={() => toggleLittleList(subindex)}
                     >
                       mais informações
                     </button>
-                    {isLittleList && (
+                    {isLittleList[subindex] && (
                       <MoreInformationsForStop
                         date={item.data}
-                        isId={cycles.prometeus}
+                        namePrometeus={cycles.prometeus}
                       />
                     )}
                   </div>

@@ -51,3 +51,15 @@ export type TypeOrganization = {
     [key: string]: string | number;
   }[];
 };
+
+export interface TypeReasonsStop {
+  [0]: {
+    dataDaParada: string;
+    dataDaVolta: string;
+    motivoParada: string;
+    tempoInativoMin: number;
+  }[];
+  [1]: {
+    total: number;
+  };
+}

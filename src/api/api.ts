@@ -2,6 +2,7 @@ import { DateRange } from 'react-day-picker';
 import {
   TypeCycleOfPrometeusToDay,
   TypeDevicesCycle,
+  TypeReasonsStop,
 } from '../types/TypeCycle';
 import {
   TypeDevice,
@@ -114,4 +115,16 @@ export async function getValuesOfGas(
   }
 
   return [];
+}
+
+export async function getReasonsStop(date: string, namePrometeus: string) {
+  console.log(
+    `${url}/whystop/inforeasonsstop/${namePrometeus}/${date}/${date}`
+  );
+  const response = await fetch(
+    `${url}/whystop/inforeasonsstop/${namePrometeus}/${date}/${date}`
+  );
+
+  const data: TypeReasonsStop = await response.json();
+  return data;
 }

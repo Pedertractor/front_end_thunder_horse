@@ -19,6 +19,7 @@ import {
 } from 'react-icons/md';
 import LevelForEffetiveCapacity from './levelforeffectivecapacity';
 import MoreInformationsForStop from './moreinformationsforstop';
+import { TbHammer, TbHammerOff } from 'react-icons/tb';
 
 interface Props {
   isDaysCycle: TypeDevicesCycle[];
@@ -176,10 +177,81 @@ const LineGraphCycle = ({ isDaysCycle }: Props) => {
                       mais informações
                     </button>
                     {isLittleList[subindex] && (
-                      <MoreInformationsForStop
-                        date={item.data}
-                        namePrometeus={cycles.prometeus}
-                      />
+                      <div className=' w-full flex flex-col gap-2'>
+                        <div className=' flex flex-col items-center justify-center gap-2'>
+                          <h2 className=' text-sm font-medium mb-0'>
+                            status em horas
+                          </h2>
+                          <div className=' flex flex-col items-center border w-full p-1 rounded'>
+                            <p className=' w-full flex items-center justify-center gap-1'>
+                              trabalhado
+                              <span>
+                                <TbHammer />
+                              </span>
+                            </p>
+                            <div className=' flex items-center'>
+                              <p>
+                                {Math.floor(item.tempoTrabalhado / 3600) <= 9
+                                  ? `0${Math.floor(
+                                      item.tempoTrabalhado / 3600
+                                    )}:`
+                                  : `${Math.floor(
+                                      item.tempoTrabalhado / 3600
+                                    )}:`}
+                              </p>
+                              <p>
+                                {Math.floor(
+                                  (item.tempoTrabalhado % 3600) / 60
+                                ) <= 9
+                                  ? `0${Math.floor(
+                                      (item.tempoTrabalhado % 3600) / 60
+                                    )}:`
+                                  : `${Math.floor(
+                                      (item.tempoTrabalhado % 3600) / 60
+                                    )}:`}
+                              </p>
+                              <p>
+                                {item.tempoTrabalhado % 60 <= 9
+                                  ? `0${item.tempoTrabalhado % 60}`
+                                  : `${item.tempoTrabalhado % 60}`}
+                              </p>
+                            </div>
+                          </div>
+                          <div className=' flex flex-col items-center border w-full p-1'>
+                            <p className=' w-full flex items-center justify-center gap-1'>
+                              parado
+                              <span>
+                                <TbHammerOff />
+                              </span>
+                            </p>
+                            <div className=' flex items-center'>
+                              <p>
+                                {Math.floor(item.tempoParado / 3600) <= 9
+                                  ? `0${Math.floor(item.tempoParado / 3600)}:`
+                                  : `${Math.floor(item.tempoParado / 3600)}:`}
+                              </p>
+                              <p>
+                                {Math.floor((item.tempoParado % 3600) / 60) <= 9
+                                  ? `0${Math.floor(
+                                      (item.tempoParado % 3600) / 60
+                                    )}:`
+                                  : `${Math.floor(
+                                      (item.tempoParado % 3600) / 60
+                                    )}:`}
+                              </p>
+                              <p>
+                                {item.tempoParado % 60 <= 9
+                                  ? `0${item.tempoParado % 60}`
+                                  : `${item.tempoParado % 60}`}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <MoreInformationsForStop
+                          date={item.data}
+                          namePrometeus={cycles.prometeus}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}

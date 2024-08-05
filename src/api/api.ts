@@ -118,9 +118,6 @@ export async function getValuesOfGas(
 }
 
 export async function getReasonsStop(date: string, namePrometeus: string) {
-  console.log(
-    `${url}/whystop/inforeasonsstop/${namePrometeus}/${date}/${date}`
-  );
   const response = await fetch(
     `${url}/whystop/inforeasonsstop/${namePrometeus}/${date}/${date}`
   );

@@ -14,11 +14,10 @@ const MoreInformationsForStop = ({
     queryFn: () => getReasonsStop(date, namePrometeus),
   });
   return (
-    <div>
+    <div className=' flex flex-col py-2'>
       {isLoadingReasonsStop && <div>carregando...</div>}
-
-      <div className=' rounded rounded-l-none w-full flex flex-col items-center justify-center py-2'>
-        <h2 className=' text-sm font-medium mb-2'>Motivos das paradas</h2>
+      <h2 className=' text-sm font-medium mb-0'>Motivos das paradas</h2>
+      <div className=' rounded rounded-l-none w-full grid grid-cols-2 gap-1 items-center justify-center py-2'>
         {isReasonsStop
           ? isReasonsStop[0].map((item, index) => (
               <div

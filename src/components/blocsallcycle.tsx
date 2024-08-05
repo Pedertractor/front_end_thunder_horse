@@ -2,6 +2,14 @@ import { TypeDevicesCycle } from '../types/TypeCycle';
 import LevelForEffetiveCapacity from './levelforeffectivecapacity';
 
 const BlocsAllCycle = ({ isAllCycle }: { isAllCycle: TypeDevicesCycle[] }) => {
+  if (isAllCycle) {
+    isAllCycle.sort((a, b) => {
+      const numA = parseInt(a.prometeus.replace('prometeus', ''));
+      const numB = parseInt(b.prometeus.replace('prometeus', ''));
+
+      return numA - numB;
+    });
+  }
   return (
     <section className=' w-full rounded shadow flex flex-col justify-center gap-2 p-2 mt-2'>
       <h1 className=' font-bold mb-2'>levantamento total</h1>

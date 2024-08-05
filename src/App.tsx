@@ -5,6 +5,7 @@ import RightMenu from './components/rightmenu';
 import Context from './globalcontext/globalcontext';
 import Devices from './page/devices';
 import CiclyOfService from './page/ciclyofservices';
+import LoadingLastWelding from './components/loadingpage/loadinglastwelding';
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/ciclodeservico' element={<CiclyOfService />} />
           <Route path='/dispositivos' element={<Devices />} />
-          <Route path='/monitoramento' />
+          <Route path='/monitoramento' element={<LoadingLastWelding />} />
         </Routes>
       </BrowserRouter>
     </Context>

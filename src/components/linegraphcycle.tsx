@@ -18,13 +18,17 @@ import {
   MdOutlineKeyboardArrowRight,
 } from 'react-icons/md';
 import LevelForEffetiveCapacity from './levelforeffectivecapacity';
+import MoreInformationsForStop from './moreinformationsforstop';
+import { TbHammer, TbHammerOff } from 'react-icons/tb';
 
 interface Props {
   isDaysCycle: TypeDevicesCycle[];
 }
 
 const LineGraphCycle = ({ isDaysCycle }: Props) => {
-  const [isLittleList, setLittleList] = useState<boolean>(false);
+  const [isLittleList, setLittleList] = useState<boolean[]>(
+    new Array(isDaysCycle.length).fill(false)
+  );
   const [isDataForGraph, setDataForGraph] = useState<TypeOrganization>();
   const [openLists, setOpenLists] = useState<boolean[]>(
     new Array(isDaysCycle.length).fill(false)
@@ -38,22 +42,28 @@ const LineGraphCycle = ({ isDaysCycle }: Props) => {
 
     const forLine: DeviceCycle[] = [];
     if (isDaysCycle) {
-      isDaysCycle.forEach((item) => {
-        item.weldingCycle[0].map((cycle) => {
-          forLine.push({
-            prometeus: item.prometeus,
-            data: cycle.data,
-            porcentagemCapacidadeEfetiva: cycle.porcentagemCapacidadeEfetiva,
-            porcentagemParado: cycle.porcentagemParado,
-            porcentagemTrabalhando: cycle.porcentagemTrabalhando,
-            quantidadeDeCordoesDeSolda: cycle.quantidadeDeCordoesDeSolda,
-            tempoParado: cycle.tempoParado,
-            tempoTrabalhado: cycle.tempoTrabalhado,
+      isDaysCycle
+        .sort((a, b) => {
+          const numA = parseInt(a.prometeus.replace('prometeus', ''));
+          const numB = parseInt(b.prometeus.replace('prometeus', ''));
+
+          return numA - numB;
+        })
+        .forEach((item) => {
+          item.weldingCycle[0].map((cycle) => {
+            forLine.push({
+              prometeus: item.prometeus,
+              data: cycle.data,
+              porcentagemCapacidadeEfetiva: cycle.porcentagemCapacidadeEfetiva,
+              porcentagemParado: cycle.porcentagemParado,
+              porcentagemTrabalhando: cycle.porcentagemTrabalhando,
+              quantidadeDeCordoesDeSolda: cycle.quantidadeDeCordoesDeSolda,
+              tempoParado: cycle.tempoParado,
+              tempoTrabalhado: cycle.tempoTrabalhado,
+            });
           });
         });
-      });
     }
-    console.log(isDaysCycle);
 
     forLine.forEach((item) => {
       let foundTrabalhado = organizationDatas.porcentagemTrabalhado.find(
@@ -81,9 +91,14 @@ const LineGraphCycle = ({ isDaysCycle }: Props) => {
       foundParado[item.prometeus] = item.porcentagemParado;
     });
 
-    console.log(organizationDatas);
     setDataForGraph(organizationDatas);
   }, [isDaysCycle]);
+
+  const toggleLittleList = (index: number) => {
+    const updateOpenLittleList = [...isLittleList];
+    updateOpenLittleList[index] = !updateOpenLittleList[index];
+    setLittleList(updateOpenLittleList);
+  };
 
   const toggleList = (index: number) => {
     const updatedOpenLists = [...openLists];
@@ -157,26 +172,86 @@ const LineGraphCycle = ({ isDaysCycle }: Props) => {
 
                     <button
                       className=' bg-slate-400 p-1 font-bold w-full text-sm rounded'
-                      onClick={() => setLittleList(!isLittleList)}
+                      onClick={() => toggleLittleList(subindex)}
                     >
                       mais informações
                     </button>
-                    {isLittleList && (
-                      <>
-                        <div className=' w-full flex items-center justify-between'>
-                          <p className='text-sm flex  flex-col items-center gap-1 justify-center'>
-                            tempo parado
-                            <span> {item.tempoParado} sec</span>
-                          </p>
-
-                          <p className='text-sm flex flex-col items-center gap-1 justify-center'>
-                            Trabalhando
-                            <span> {item.tempoTrabalhado} sec</span>
-                          </p>
+                    {isLittleList[subindex] && (
+                      <div className=' w-full flex flex-col gap-2'>
+                        <div className=' flex flex-col items-center justify-center gap-2'>
+                          <h2 className=' text-sm font-medium mb-0'>
+                            status em horas
+                          </h2>
+                          <div className=' flex flex-col items-center border w-full p-1 rounded'>
+                            <p className=' w-full flex items-center justify-center gap-1'>
+                              trabalhado
+                              <span>
+                                <TbHammer />
+                              </span>
+                            </p>
+                            <div className=' flex items-center'>
+                              <p>
+                                {Math.floor(item.tempoTrabalhado / 3600) <= 9
+                                  ? `0${Math.floor(
+                                      item.tempoTrabalhado / 3600
+                                    )}:`
+                                  : `${Math.floor(
+                                      item.tempoTrabalhado / 3600
+                                    )}:`}
+                              </p>
+                              <p>
+                                {Math.floor(
+                                  (item.tempoTrabalhado % 3600) / 60
+                                ) <= 9
+                                  ? `0${Math.floor(
+                                      (item.tempoTrabalhado % 3600) / 60
+                                    )}:`
+                                  : `${Math.floor(
+                                      (item.tempoTrabalhado % 3600) / 60
+                                    )}:`}
+                              </p>
+                              <p>
+                                {item.tempoTrabalhado % 60 <= 9
+                                  ? `0${item.tempoTrabalhado % 60}`
+                                  : `${item.tempoTrabalhado % 60}`}
+                              </p>
+                            </div>
+                          </div>
+                          <div className=' flex flex-col items-center border w-full p-1'>
+                            <p className=' w-full flex items-center justify-center gap-1'>
+                              parado
+                              <span>
+                                <TbHammerOff />
+                              </span>
+                            </p>
+                            <div className=' flex items-center'>
+                              <p>
+                                {Math.floor(item.tempoParado / 3600) <= 9
+                                  ? `0${Math.floor(item.tempoParado / 3600)}:`
+                                  : `${Math.floor(item.tempoParado / 3600)}:`}
+                              </p>
+                              <p>
+                                {Math.floor((item.tempoParado % 3600) / 60) <= 9
+                                  ? `0${Math.floor(
+                                      (item.tempoParado % 3600) / 60
+                                    )}:`
+                                  : `${Math.floor(
+                                      (item.tempoParado % 3600) / 60
+                                    )}:`}
+                              </p>
+                              <p>
+                                {item.tempoParado % 60 <= 9
+                                  ? `0${item.tempoParado % 60}`
+                                  : `${item.tempoParado % 60}`}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <p className='text-sm'>Quantidade de soldas</p>
-                        {item.quantidadeDeCordoesDeSolda} cordões
-                      </>
+                        <MoreInformationsForStop
+                          date={item.data}
+                          namePrometeus={cycles.prometeus}
+                        />
+                      </div>
                     )}
                   </div>
                 ))}
